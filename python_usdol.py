@@ -1,6 +1,8 @@
 import datetime
 import hashlib
 import hmac
+import json
+import sys
 import urllib2
 import urlparse
 
@@ -37,25 +39,30 @@ class Connection(object):
         return (header_dict, '%s&%s' % (self.baseurl,
                                         self._urlencode(header_dict)))
 
-    def _get_header(self):
+    def _get_header(self, fmt='json'):
         d, message = self._get_message()
         h = hmac.new(self.secret, message, hashlib.sha1)
         d['Signature'] = h.hexdigest()
-        d['Accept'] = 'application/json'
         return self._urlencode(d)
 
-    def _get_request(self):
-        header = self._get_header()
+    def _get_request(self, fmt='json'):
+        header = self._get_header(fmt=fmt)
         qs = self.baseurl
         url = urlparse.urljoin(USDOL_URL, qs)
-        req = urllib2.Request(url, headers={"Authorization": header})
+        req = urllib2.Request(url, headers={"Authorization": header,
+                                            "Accept": 'application/%s' % fmt})
         return req
 
-    def get_data(self):
-        data = urllib2.urlopen(self._get_request())
-        info = [line for line in data.readlines()]
-        data.close()
-        return info
+    def get_data(self, fmt='json'):
+        '''
+        get_data([fmt="json"]) -> Python dictionary
+        '''
+        data = urllib2.urlopen(self._get_request(fmt=fmt))
+        if fmt == 'json':
+            ret = json.loads(data.read())
+        else:
+            ret = data.read()
+        return ret
                         
         
         
