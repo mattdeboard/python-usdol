@@ -13,8 +13,8 @@ class Connection(object):
     token = API_AUTH_KEY
     secret = API_SHARED_SECRET
     
-    def __init__(self, baseurl='/V1/FORMS/Agencies'):
-        self.baseurl = baseurl
+    def __init__(self, dataset='FORMS', table='Agencies'):
+        self.baseurl = '/V1/%s/%s' % (dataset, table)
 
     def _urlencode(self, d):
         ret = ['%s=%s' % (k, v) for k, v in d.iteritems()]
