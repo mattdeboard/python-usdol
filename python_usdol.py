@@ -13,7 +13,7 @@ class Connection(object):
     token = API_AUTH_KEY
     secret = API_SHARED_SECRET
     
-    def __init__(self, baseurl='/V1/FORMS/Agencies?top=10'):
+    def __init__(self, baseurl='/V1/FORMS/Agencies'):
         self.baseurl = baseurl
 
     def _urlencode(self, d):
@@ -28,6 +28,7 @@ class Connection(object):
         timestamp to be accepted by the US DOL's servers.
         '''
         t = datetime.datetime.utcnow().replace(microsecond=0)
+        t -= datetime.timedelta(minutes=1)
         return (t, t.isoformat()+'Z')
 
     def _get_message(self):
@@ -40,6 +41,7 @@ class Connection(object):
         d, message = self._get_message()
         h = hmac.new(self.secret, message, hashlib.sha1)
         d['Signature'] = h.hexdigest()
+        d['Accept'] = 'application/json'
         return self._urlencode(d)
 
     def _get_request(self):
@@ -50,7 +52,10 @@ class Connection(object):
         return req
 
     def get_data(self):
-        return urllib2.urlopen(self._get_request())
+        data = urllib2.urlopen(self._get_request())
+        info = [line for line in data.readlines()]
+        data.close()
+        return info
                         
         
         
