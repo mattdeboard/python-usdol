@@ -12,10 +12,25 @@ USDOL_URL = 'http://api.dol.gov'
 
 
 class Connection(object):
+    '''
+    An instance of Connection represents a connection to the U.S. Dept.
+    of Labor's developer API.
+
+    Connection(token, secret[, dataset, table])
+
+    'token' and 'secret' are the API token & shared secret is the API
+    token generated at http://developer.dol.gov. Complete listing of
+    valid datasets and tables are to be found at the same URL.
+
+    Once you have instantiated Connection, call the get_data method,
+    which will fetch the data according to parameters. For more info,
+    consult get_data's docstring.
+    '''
     token = API_AUTH_KEY
     secret = API_SHARED_SECRET
     
-    def __init__(self, dataset='FORMS', table='Agencies'):
+    def __init__(self, token=API_AUTH_KEY, secret=API_SHARED_SECRET,
+                 dataset='FORMS', table='Agencies'):
         self.baseurl = '/V1/%s/%s' % (dataset, table)
 
     def _urlencode(self, d):
@@ -56,6 +71,7 @@ class Connection(object):
     def get_data(self, fmt='json'):
         '''
         get_data([fmt="json"]) -> Python dictionary
+        get_data([fmt="xml"]) -> XML object
         '''
         data = urllib2.urlopen(self._get_request(fmt=fmt))
         if fmt == 'json':
