@@ -17,6 +17,7 @@ import hashlib
 import hmac
 import json
 import string
+import sys
 import urllib2
 import urlparse
 
@@ -80,16 +81,17 @@ class Connection(object):
         t = datetime.datetime.utcnow().replace(microsecond=0)
         return (t, t.isoformat()+'Z')
 
-    def _get_message(self):
+    def _get_message(self, qs):
         baseurl = '/%s/%s/' % (API_VER, self.dataset)
         if self.table != '$metadata':
             baseurl += self.table
+        baseurl += qs
         date_time, timestamp = self._get_timestamp()
         header_dict = {"Timestamp": timestamp, "ApiKey": self.token}
         return (header_dict, '%s&%s' % (baseurl, self._urlencode(header_dict)))
 
-    def _get_header(self):
-        d, message = self._get_message()
+    def _get_header(self, qs):
+        d, message = self._get_message(qs)
         h = hmac.new(self.secret, message, hashlib.sha1)
         d['Signature'] = h.hexdigest()
         return self._urlencode(d)
@@ -98,14 +100,14 @@ class Connection(object):
         qs = []
         for arg in kwargs:
             if kwargs[arg]:
-                qs.append("$%s=%s" % (arg, kwargs[arg])
+                qs.append("$%s=%s" % (arg, kwargs[arg]))
         return '?' + string.join(qs)
 
-    def _get_request(self, fmt='json'):
+    def _get_request(self, qs='', fmt='json'):
         url_args = [USDOL_URL, API_VER, self.dataset, self.table]
-        header = self._get_header()
-        qs = string.join(url_args, '/')
-        req = urllib2.Request(qs, headers={"Authorization": header,
+        header = self._get_header(qs)
+        url = string.join(url_args, '/') + qs
+        req = urllib2.Request(url, headers={"Authorization": header,
                                            "Accept": 'application/%s' % fmt})
         return req
 
@@ -118,6 +120,7 @@ class Connection(object):
         'fmt' is json by default. Valid choices are 'xml' and 'json'.
         
         '''
+        
         qs = self._get_querystring(top=top, skip=skip, select=select,
                                    orderby=orderby)
         self.dataset = dataset
@@ -128,7 +131,7 @@ class Connection(object):
         if table == '$metadata' and fmt != 'xml':
             fmt = 'xml'
     
-        urlstr = self._get_request(fmt)
+        urlstr = self._get_request(qs, fmt)
         data = urllib2.urlopen(urlstr)
         if fmt == 'json':
             d = json.loads(data.read())['d']['results']
