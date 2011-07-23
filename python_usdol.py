@@ -58,7 +58,6 @@ class Connection(object):
         timestamp to be accepted by the US DOL's servers.
         '''
         t = datetime.datetime.utcnow().replace(microsecond=0)
-        t -= datetime.timedelta(minutes=1)
         return (t, t.isoformat()+'Z')
 
     def _get_message(self):
