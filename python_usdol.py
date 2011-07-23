@@ -111,18 +111,3 @@ class Connection(object):
         else:
             ret = data.read()
         return ret
-
-            
-                    
-        
-        
-                        
-        
-        
-        
-    
-        
-        
-        
-        
-    
