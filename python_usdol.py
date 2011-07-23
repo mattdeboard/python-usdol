@@ -100,7 +100,8 @@ class Connection(object):
         '''
         Class factory for individual result entries.
 
-        Each Datum instance has an attribute for every dictionary key.
+        The Datum instance simply makes dictionary values available using
+        attribute syntax vice dictionary syntax.
         '''
         class Datum:
             created = datetime.datetime.now()
