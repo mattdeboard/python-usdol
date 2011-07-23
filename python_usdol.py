@@ -94,6 +94,13 @@ class Connection(object):
         d['Signature'] = h.hexdigest()
         return self._urlencode(d)
 
+    def _get_querystring(self, **kwargs):
+        qs = []
+        for arg in kwargs:
+            if kwargs[arg]:
+                qs.append("$%s=%s" % (arg, kwargs[arg])
+        return '?' + string.join(qs)
+
     def _get_request(self, fmt='json'):
         url_args = [USDOL_URL, API_VER, self.dataset, self.table]
         header = self._get_header()
@@ -102,7 +109,8 @@ class Connection(object):
                                            "Accept": 'application/%s' % fmt})
         return req
 
-    def fetch_data(self, dataset, table='$metadata', fmt='json'):
+    def fetch_data(self, dataset, table='$metadata', fmt='json', top=0,
+                   skip=0, select='', orderby=''):
         '''
         fetch_data(dataset, table[, fmt]) -> Return an object representing
         the information in the specified table from the specified dataset.
@@ -110,6 +118,8 @@ class Connection(object):
         'fmt' is json by default. Valid choices are 'xml' and 'json'.
         
         '''
+        qs = self._get_querystring(top=top, skip=skip, select=select,
+                                   orderby=orderby)
         self.dataset = dataset
         self.table = table
         enc_opts = ['json', 'xml']
