@@ -26,6 +26,18 @@ USDOL_URL = 'http://api.dol.gov'
 API_VER = 'V1'
 
 
+class Datum:
+    created = datetime.datetime.now()
+    def __init__(self, d, ds, t):
+        self.dataset = ds
+        self.table = t
+        for key in d.keys():
+            setattr(self, key, d[key])
+            
+    def __unicode__(self):
+        return self.dataset
+
+
 class Connection(object):
     '''
     An instance of Connection represents a connection to the U.S. Dept.
@@ -47,18 +59,10 @@ class Connection(object):
 
     def _datum_factory(self, dictionary, dataset, table):
         '''
-        Class factory for individual result entries.
-
         The Datum instance simply makes dictionary values available using
         attribute syntax vice dictionary syntax.
+
         '''
-        class Datum:
-            created = datetime.datetime.now()
-            def __init__(self, d, ds, t):
-                self.dataset = dataset
-                self.table = table
-                for key in d.keys():
-                    setattr(self, key, d[key])
         return Datum(dictionary, dataset, table)
 
     def _urlencode(self, d):
