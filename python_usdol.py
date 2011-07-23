@@ -101,7 +101,9 @@ class Connection(object):
         for arg in kwargs:
             if kwargs[arg]:
                 qs.append("$%s=%s" % (arg, kwargs[arg]))
-        return '?' + string.join(qs)
+        print >> sys.stderr, "qstring: %s" % qs
+        print >> sys.stderr, '?' + string.join(qs)
+        return '?' + string.join(qs, '&')
 
     def _get_request(self, qs='', fmt='json'):
         url_args = [USDOL_URL, API_VER, self.dataset, self.table]
