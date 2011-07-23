@@ -30,6 +30,22 @@ class Connection(object):
     token = API_AUTH_KEY
     secret = API_SHARED_SECRET
 
+    def _datum_factory(self, dictionary, dataset, table):
+        '''
+        Class factory for individual result entries.
+
+        The Datum instance simply makes dictionary values available using
+        attribute syntax vice dictionary syntax.
+        '''
+        class Datum:
+            created = datetime.datetime.now()
+            def __init__(self, d, ds, t):
+                self.dataset = dataset
+                self.table = table
+                for key in d.keys():
+                    setattr(self, key, d[key])
+        return Datum(dictionary, dataset, table)
+
     def _urlencode(self, d):
         ret = ['%s=%s' % (k, v) for k, v in d.iteritems()]
         return '&'.join(ret)
@@ -96,21 +112,6 @@ class Connection(object):
             ret = data.read()
         return ret
 
-    def _datum_factory(self, dictionary, dataset, table):
-        '''
-        Class factory for individual result entries.
-
-        The Datum instance simply makes dictionary values available using
-        attribute syntax vice dictionary syntax.
-        '''
-        class Datum:
-            created = datetime.datetime.now()
-            def __init__(self, d, ds, t):
-                self.dataset = dataset
-                self.table = table
-                for key in d.keys():
-                    setattr(self, key, d[key])
-        return Datum(dictionary, dataset, table)
             
                     
         
