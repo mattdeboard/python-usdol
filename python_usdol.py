@@ -26,13 +26,6 @@ class Connection(object):
     which will fetch the data according to parameters. For more info,
     consult get_data's docstring.
     '''
-    token = API_AUTH_KEY
-    secret = API_SHARED_SECRET
-    
-    def __init__(self, token=API_AUTH_KEY, secret=API_SHARED_SECRET,
-                 dataset='FORMS', table='Agencies'):
-        self.metaurl = '/V1/%s/$metadata' % dataset
-        self.baseurl = '/V1/%s/%s' % (dataset, table)
 
     def _urlencode(self, d):
         ret = ['%s=%s' % (k, v) for k, v in d.iteritems()]
@@ -71,25 +64,36 @@ class Connection(object):
                                             "Accept": 'application/%s' % fmt})
         return req
 
-    def get_data(self, fmt='json', meta_only=False):
+    def fetch_data(self, dataset, table, fmt='json'):
         '''
-        get_data([fmt="json", meta_only=False]) -> Python dictionary
-        (json encoding is not available when fetching metadata)
+        fetch_data(dataset, table[, fmt]) -> Return an object representing
+        the information in the specified table from the specified dataset.
         
-        get_data([fmt="xml", meta_only]) -> XML object
-
-        Set meta_only to True to fetch only the metadata for the dataset.
+        'fmt' is json by default. Valid choices are 'xml' and 'json'.
         '''
-        if meta_only and fmt != 'xml':
-            # Metadata retrieval is unavailable in json format from the DOL.
-            fmt = 'xml'
-        urlstr = self._get_request(fmt, meta_only)
+        enc_opts = ['json', 'xml']
+        urlstr = self._get_request(fmt)
         data = urllib2.urlopen(urlstr)
         if fmt == 'json':
             ret = json.loads(data.read())
+        elif fmt not in enc_opts:
+            raise AttributeError("Valid format choices are: json, xml")
         else:
             ret = data.read()
         return ret
+
+    def fetch_metadata(self, dataset):
+        '''
+        fetch_metadata(dataset) -> Returns XML object containing metadata
+        for the specified dataset.
+
+        JSON encoding is unavailable for metadata.
+        '''
+    def get_all_agencies(self, fmt='json', meta_only=False):
+        '''
+        '''
+        
+        
                         
         
         
