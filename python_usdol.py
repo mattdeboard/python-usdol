@@ -9,7 +9,7 @@ import urlparse
 from usdol_secret import API_AUTH_KEY, API_SHARED_SECRET
 
 USDOL_URL = 'http://api.dol.gov'
-
+API_VER = 'V1'
 
 class Connection(object):
     '''
@@ -26,6 +26,8 @@ class Connection(object):
     which will fetch the data according to parameters. For more info,
     consult get_data's docstring.
     '''
+    secret = API_AUTH_KEY
+    token = API_SHARED_SECRET
 
     def _urlencode(self, d):
         ret = ['%s=%s' % (k, v) for k, v in d.iteritems()]
@@ -48,20 +50,23 @@ class Connection(object):
         return (header_dict, '%s&%s' % (self.baseurl,
                                         self._urlencode(header_dict)))
 
-    def _get_header(self, fmt='json'):
+    def _get_header(self):
         d, message = self._get_message()
         h = hmac.new(self.secret, message, hashlib.sha1)
         d['Signature'] = h.hexdigest()
         return self._urlencode(d)
 
-    def _get_request(self, fmt='json', meta_only=False):
-        header = self._get_header(fmt=fmt)
-        qs = self.baseurl
-        if meta_only:
-            qs = self.metaurl
-        url = urlparse.urljoin(USDOL_URL, qs)
-        req = urllib2.Request(url, headers={"Authorization": header,
-                                            "Accept": 'application/%s' % fmt})
+    def _get_request(self, ds, table='', fmt='json'):
+        url_args = [USDOL_URL, API_VER, d]
+        t = '$metadata'
+        if t:
+            t = table
+        url_args.append(t)
+        header = self._get_header()
+        qs = url_args.join('/')
+#        url = urlparse.urljoin(USDOL_URL, qs)
+        req = urllib2.Request(qs, headers={"Authorization": header,
+                                           "Accept": 'application/%s' % fmt})
         return req
 
     def fetch_data(self, dataset, table, fmt='json'):
@@ -72,12 +77,13 @@ class Connection(object):
         'fmt' is json by default. Valid choices are 'xml' and 'json'.
         '''
         enc_opts = ['json', 'xml']
-        urlstr = self._get_request(fmt)
+        if fmt not in enc_opts:
+            raise AttributeError("Valid format choices are: json, xml")
+            
+        urlstr = self._get_request(dataset, table=table, fmt=fmt)
         data = urllib2.urlopen(urlstr)
         if fmt == 'json':
             ret = json.loads(data.read())
-        elif fmt not in enc_opts:
-            raise AttributeError("Valid format choices are: json, xml")
         else:
             ret = data.read()
         return ret
@@ -89,6 +95,9 @@ class Connection(object):
 
         JSON encoding is unavailable for metadata.
         '''
+        urlstr = self._get_request(dataset, fmt='xml')
+        return urllib2.urlopen(urlstr).read()
+        
     def get_all_agencies(self, fmt='json', meta_only=False):
         '''
         '''
