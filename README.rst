@@ -12,7 +12,7 @@ Usage is straightforward.
 
   import python_usdol
 
-  conn = python_usdol.Connection()
+  conn = python_usdol.Connection(token='mytoken', secret='mysharedsecret')
   
   data = conn.fetch_data('FAQ', 'Topic')
 
@@ -31,9 +31,13 @@ Parameters
 Python-USDOL has some "alpha quality" support for many of the request parameters outlined in the DOL's `API Access Guide <http://developer.dol.gov/html-req.htm>`_. These include:
 
   $metadata
+  
   $top
+  
   $skip
+  
   $orderby
+  
 
 If you are looking for a way to contribute, adding the rest of the more complex filtering parameters would be an excellent starting point.
 
