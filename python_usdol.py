@@ -56,7 +56,7 @@ class Connection(object):
         d['Signature'] = h.hexdigest()
         return self._urlencode(d)
 
-    def _get_request(self, ds, table='', fmt='json'):
+    def _get_request(self, ds, table, fmt='json'):
         url_args = [USDOL_URL, API_VER, d]
         t = '$metadata'
         if t:
@@ -79,8 +79,10 @@ class Connection(object):
         enc_opts = ['json', 'xml']
         if fmt not in enc_opts:
             raise AttributeError("Valid format choices are: json, xml")
-            
-        urlstr = self._get_request(dataset, table=table, fmt=fmt)
+        if table == '$metadata' and fmt != 'xml':
+            fmt = 'xml'
+    
+        urlstr = self._get_request(dataset, table, fmt)
         data = urllib2.urlopen(urlstr)
         if fmt == 'json':
             ret = json.loads(data.read())
