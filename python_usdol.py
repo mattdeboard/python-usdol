@@ -90,11 +90,28 @@ class Connection(object):
         urlstr = self._get_request(fmt)
         data = urllib2.urlopen(urlstr)
         if fmt == 'json':
-            ret = json.loads(data.read())
+            d = json.loads(data.read())['d']['results']
+            ret = [self._datum_factory(i, self.dataset, self.table) for i in d]
         else:
             ret = data.read()
         return ret
 
+    def _datum_factory(self, dictionary, dataset, table):
+        '''
+        Class factory for individual result entries.
+
+        Each Datum instance has an attribute for every dictionary key.
+        '''
+        class Datum:
+            created = datetime.datetime.now()
+            def __init__(self, d, ds, t):
+                self.dataset = dataset
+                self.table = table
+                for key in d.keys():
+                    setattr(self, key, d[key])
+        return Datum(dictionary, dataset, table)
+            
+                    
         
         
                         
