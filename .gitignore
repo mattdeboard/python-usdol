@@ -1,3 +1,4 @@
+dist/
 usdol_secret.py
 *.pyc
 scratch.py
