@@ -1,2 +1,0 @@
-API_AUTH_KEY = ''
-API_SHARED_SECRET = ''

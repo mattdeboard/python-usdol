@@ -26,7 +26,7 @@ USDOL_URL = 'http://api.dol.gov'
 API_VER = 'V1'
 
 
-class Datum:
+class Datum(object):
     created = datetime.datetime.now()
     def __init__(self, d, ds, t):
         self.dataset = ds
@@ -34,8 +34,8 @@ class Datum:
         for key in d.keys():
             setattr(self, key, d[key])
             
-    def __unicode__(self):
-        return self.dataset
+    def __repr__(self):
+        return '<python_usdol.%s.%s object>' % (self.dataset, self.table)
 
 
 class Connection(object):
