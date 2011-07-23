@@ -69,7 +69,7 @@ class Connection(object):
                                            "Accept": 'application/%s' % fmt})
         return req
 
-    def fetch_data(self, dataset, table, fmt='json'):
+    def fetch_data(self, dataset, table='$metadata', fmt='json'):
         '''
         fetch_data(dataset, table[, fmt]) -> Return an object representing
         the information in the specified table from the specified dataset.
@@ -88,19 +88,6 @@ class Connection(object):
             ret = data.read()
         return ret
 
-    def fetch_metadata(self, dataset):
-        '''
-        fetch_metadata(dataset) -> Returns XML object containing metadata
-        for the specified dataset.
-
-        JSON encoding is unavailable for metadata.
-        '''
-        urlstr = self._get_request(dataset, fmt='xml')
-        return urllib2.urlopen(urlstr).read()
-        
-    def get_all_agencies(self, fmt='json', meta_only=False):
-        '''
-        '''
         
         
                         
