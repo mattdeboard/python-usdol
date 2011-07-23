@@ -2,6 +2,7 @@ import datetime
 import hashlib
 import hmac
 import json
+import string
 import sys
 import urllib2
 import urlparse
@@ -26,8 +27,8 @@ class Connection(object):
     which will fetch the data according to parameters. For more info,
     consult get_data's docstring.
     '''
-    secret = API_AUTH_KEY
-    token = API_SHARED_SECRET
+    token = API_AUTH_KEY
+    secret = API_SHARED_SECRET
 
     def _urlencode(self, d):
         ret = ['%s=%s' % (k, v) for k, v in d.iteritems()]
@@ -45,12 +46,15 @@ class Connection(object):
         return (t, t.isoformat()+'Z')
 
     def _get_message(self):
+        print >> sys.stderr, self.table
+        print >> sys.stderr, self.dataset
         baseurl = '/%s/%s/' % (API_VER, self.dataset)
         if self.table != '$metadata':
             baseurl += self.table
+        print >> sys.stderr, baseurl
         date_time, timestamp = self._get_timestamp()
         header_dict = {"Timestamp": timestamp, "ApiKey": self.token}
-        return (header_dict, '%s&%s' % (.baseurl, self._urlencode(header_dict)))
+        return (header_dict, '%s&%s' % (baseurl, self._urlencode(header_dict)))
 
     def _get_header(self):
         d, message = self._get_message()
@@ -61,7 +65,8 @@ class Connection(object):
     def _get_request(self, fmt='json'):
         url_args = [USDOL_URL, API_VER, self.dataset, self.table]
         header = self._get_header()
-        qs = url_args.join('/')
+        qs = string.join(url_args, '/')
+        print >> sys.stderr, 'url: %s' % qs
 #        url = urlparse.urljoin(USDOL_URL, qs)
         req = urllib2.Request(qs, headers={"Authorization": header,
                                            "Accept": 'application/%s' % fmt})
