@@ -20,8 +20,6 @@ import string
 import urllib2
 import urlparse
 
-from usdol_secret import API_AUTH_KEY, API_SHARED_SECRET
-
 USDOL_URL = 'http://api.dol.gov'
 API_VER = 'V1'
 
@@ -54,8 +52,9 @@ class Connection(object):
     consult get_data's docstring.
     
     '''
-    token = API_AUTH_KEY
-    secret = API_SHARED_SECRET
+    def __init__(self, token, secret):
+        self.token = token
+        self.secret = secret
 
     def _datum_factory(self, dictionary, dataset, table):
         '''
