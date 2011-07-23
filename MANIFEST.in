@@ -1,0 +1,1 @@
+include setup.py MANIFEST README.rst python_usdol.py
