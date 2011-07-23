@@ -1,3 +1,17 @@
+#!/usr/bin/env python
+'''
+Python-USDOL
+
+Python module for access to the U.S. Department of Labor datasets via
+its developer API. (http://developer.dol.gov)
+'''
+
+__version__ = "1.0"
+__license__ = "BSD"
+__copyright__ = "Copyright 2011, Matt DeBoard"
+__author__ = "Matt DeBoard <http://mattdeboard.net>"
+
+
 import datetime
 import hashlib
 import hmac
@@ -11,6 +25,7 @@ from usdol_secret import API_AUTH_KEY, API_SHARED_SECRET
 
 USDOL_URL = 'http://api.dol.gov'
 API_VER = 'V1'
+
 
 class Connection(object):
     '''
@@ -26,6 +41,7 @@ class Connection(object):
     Once you have instantiated Connection, call the get_data method,
     which will fetch the data according to parameters. For more info,
     consult get_data's docstring.
+    
     '''
     token = API_AUTH_KEY
     secret = API_SHARED_SECRET
@@ -56,6 +72,7 @@ class Connection(object):
         
         There is a 15-minute window for an auth string with a valid
         timestamp to be accepted by the US DOL's servers.
+        
         '''
         t = datetime.datetime.utcnow().replace(microsecond=0)
         t -= datetime.timedelta(minutes=1)
@@ -94,6 +111,7 @@ class Connection(object):
         the information in the specified table from the specified dataset.
         
         'fmt' is json by default. Valid choices are 'xml' and 'json'.
+        
         '''
         self.dataset = dataset
         self.table = table
