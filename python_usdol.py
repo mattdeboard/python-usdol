@@ -45,10 +45,12 @@ class Connection(object):
         return (t, t.isoformat()+'Z')
 
     def _get_message(self):
+        baseurl = '/%s/%s/' % (API_VER, self.dataset)
+        if self.table != '$metadata':
+            baseurl += self.table
         date_time, timestamp = self._get_timestamp()
         header_dict = {"Timestamp": timestamp, "ApiKey": self.token}
-        return (header_dict, '%s&%s' % (self.baseurl,
-                                        self._urlencode(header_dict)))
+        return (header_dict, '%s&%s' % (.baseurl, self._urlencode(header_dict)))
 
     def _get_header(self):
         d, message = self._get_message()
@@ -56,12 +58,8 @@ class Connection(object):
         d['Signature'] = h.hexdigest()
         return self._urlencode(d)
 
-    def _get_request(self, ds, table, fmt='json'):
-        url_args = [USDOL_URL, API_VER, d]
-        t = '$metadata'
-        if t:
-            t = table
-        url_args.append(t)
+    def _get_request(self, fmt='json'):
+        url_args = [USDOL_URL, API_VER, self.dataset, self.table]
         header = self._get_header()
         qs = url_args.join('/')
 #        url = urlparse.urljoin(USDOL_URL, qs)
@@ -76,13 +74,15 @@ class Connection(object):
         
         'fmt' is json by default. Valid choices are 'xml' and 'json'.
         '''
+        self.dataset = dataset
+        self.table = table
         enc_opts = ['json', 'xml']
         if fmt not in enc_opts:
             raise AttributeError("Valid format choices are: json, xml")
         if table == '$metadata' and fmt != 'xml':
             fmt = 'xml'
     
-        urlstr = self._get_request(dataset, table, fmt)
+        urlstr = self._get_request(fmt)
         data = urllib2.urlopen(urlstr)
         if fmt == 'json':
             ret = json.loads(data.read())
