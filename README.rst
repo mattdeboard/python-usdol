@@ -13,6 +13,7 @@ Usage is straightforward.
   import python_usdol
 
   conn = python_usdol.Connection()
+  
   data = conn.fetch_data('FAQ', 'Topic')
 
 
