@@ -113,8 +113,13 @@ class Connection(object):
     def fetch_data(self, dataset, table='$metadata', fmt='json', top=0,
                    skip=0, select='', orderby=''):
         '''
-        fetch_data(dataset, table[, fmt]) -> Return an object representing
-        the information in the specified table from the specified dataset.
+        fetch_data(dataset, table[, fmt, top, skip, select, orderby]) ->
+        
+            Return an object representing the information in the specified
+            table from the specified dataset.
+
+            The rest of the args work as outlines in the DOL's API
+            reference (http://developer.dol.gov/html-req.htm).
         
         'fmt' is json by default. Valid choices are 'xml' and 'json'.
         

@@ -23,6 +23,20 @@ In the above example, `data` will be a list of `Datum` instances. Each `Datum` i
 
 e.g. from the example: data[0].TopicID == 1, data[0].TopicValue == u'Wages & Work Hours'
 
+
+-----------
+Parameters
+-----------
+
+Python-USDOL has some "alpha quality" support for many of the request parameters outlined in the DOL's `API Access Guide <http://developer.dol.gov/html-req.htm>`_. These include:
+
+  $metadata
+  $top
+  $skip
+  $orderby
+
+If you are looking for a way to contribute, adding the rest of the more complex filtering parameters would be an excellent starting point.
+
 ------
 Future
 ------
