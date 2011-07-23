@@ -31,6 +31,7 @@ class Connection(object):
     
     def __init__(self, token=API_AUTH_KEY, secret=API_SHARED_SECRET,
                  dataset='FORMS', table='Agencies'):
+        self.metaurl = '/V1/%s/$metadata' % dataset
         self.baseurl = '/V1/%s/%s' % (dataset, table)
 
     def _urlencode(self, d):
@@ -60,20 +61,30 @@ class Connection(object):
         d['Signature'] = h.hexdigest()
         return self._urlencode(d)
 
-    def _get_request(self, fmt='json'):
+    def _get_request(self, fmt='json', meta_only=False):
         header = self._get_header(fmt=fmt)
         qs = self.baseurl
+        if meta_only:
+            qs = self.metaurl
         url = urlparse.urljoin(USDOL_URL, qs)
         req = urllib2.Request(url, headers={"Authorization": header,
                                             "Accept": 'application/%s' % fmt})
         return req
 
-    def get_data(self, fmt='json'):
+    def get_data(self, fmt='json', meta_only=False):
         '''
-        get_data([fmt="json"]) -> Python dictionary
-        get_data([fmt="xml"]) -> XML object
+        get_data([fmt="json", meta_only=False]) -> Python dictionary
+        (json encoding is not available when fetching metadata)
+        
+        get_data([fmt="xml", meta_only]) -> XML object
+
+        Set meta_only to True to fetch only the metadata for the dataset.
         '''
-        data = urllib2.urlopen(self._get_request(fmt=fmt))
+        if meta_only and fmt != 'xml':
+            # Metadata retrieval is unavailable in json format from the DOL.
+            fmt = 'xml'
+        urlstr = self._get_request(fmt, meta_only)
+        data = urllib2.urlopen(urlstr)
         if fmt == 'json':
             ret = json.loads(data.read())
         else:
