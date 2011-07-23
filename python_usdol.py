@@ -17,7 +17,6 @@ import hashlib
 import hmac
 import json
 import string
-import sys
 import urllib2
 import urlparse
 
@@ -101,8 +100,6 @@ class Connection(object):
         for arg in kwargs:
             if kwargs[arg]:
                 qs.append("$%s=%s" % (arg, kwargs[arg]))
-        print >> sys.stderr, "qstring: %s" % qs
-        print >> sys.stderr, '?' + string.join(qs)
         return '?' + string.join(qs, '&')
 
     def _get_request(self, qs='', fmt='json'):
