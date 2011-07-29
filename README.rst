@@ -28,7 +28,7 @@ e.g. from the example: data[0].TopicID == 1, data[0].TopicValue == u'Wages & Wor
 Parameters
 -----------
 
-Python-USDOL has some "alpha quality" support for many of the request parameters outlined in the DOL's `API Access Guide <http://developer.dol.gov/html-req.htm>`_. These include:
+Python-USDOL has support for all the request methods outlined in the DOL's `API Access Guide <http://developer.dol.gov/html-req.htm>`_:
 
   $metadata
   
@@ -37,9 +37,19 @@ Python-USDOL has some "alpha quality" support for many of the request parameters
   $skip
   
   $orderby
-  
 
-If you are looking for a way to contribute, adding the rest of the more complex filtering parameters would be an excellent starting point.
+  $filter
+
+
+------
+Filter
+------
+
+Using the filter method goes thusly:
+
+  data = conn.fetch_data("FAQ", "Topic", filter_="TopicID eq 5")
+
+Since `filter` is a keyword in Python, Python-USDOL uses `filter_` in its place.
 
 ------
 Future
