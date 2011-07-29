@@ -23,6 +23,9 @@ In the above example, `data` will be a list of `Datum` instances. Each `Datum` i
 
 e.g. from the example: data[0].TopicID == 1, data[0].TopicValue == u'Wages & Work Hours'
 
+Some datasets have "multipart" names, e.g. the `Consumer Expenditure Survey Dataset <http://developer.dol.gov/ConsumerExpenditure-DATASET.htm>`_. In this case, since the base url is `http://api.dol.gov/V1/Statistics/ConsumerExpenditure`, vice e.g. `.../V1/FORMS`, for the first argument to fetch data, you would pass the "multipart" Agency name:
+
+  data = conn.fetch_data('Statistics/ConsumerExpenditure', '<desired table name>')
 
 -----------
 Parameters
