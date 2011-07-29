@@ -17,6 +17,7 @@ import hashlib
 import hmac
 import json
 import string
+import urllib
 import urllib2
 import urlparse
 
@@ -99,7 +100,11 @@ class Connection(object):
         qs = []
         for arg in kwargs:
             if kwargs[arg]:
-                qs.append("$%s=%s" % (arg, kwargs[arg]))
+                # `filter` is a keyword in Python, so I avoid using it by
+                # adding a _ to the end, then removing it here.
+                key = arg.replace('_', '')
+                val = kwargs[arg].replace(' ', '+')
+                qs.append("$%s=%s" % (key, val))
         return '?' + string.join(qs, '&')
 
     def _get_request(self, qs='', fmt='json'):
@@ -111,7 +116,7 @@ class Connection(object):
         return req
 
     def fetch_data(self, dataset, table='$metadata', fmt='json', top=0,
-                   skip=0, select='', orderby=''):
+                   skip=0, select='', orderby='', filter_=''):
         '''
         fetch_data(dataset, table[, fmt, top, skip, select, orderby]) ->
         
@@ -126,7 +131,9 @@ class Connection(object):
         '''
         
         qs = self._get_querystring(top=top, skip=skip, select=select,
-                                   orderby=orderby)
+                                   orderby=orderby, filter_=filter_)
+        import sys
+        print >> sys.stdout, qs
         self.dataset = dataset
         self.table = table
         enc_opts = ['json', 'xml']
