@@ -77,6 +77,7 @@ class Connection(object):
         
         '''
         t = datetime.datetime.utcnow().replace(microsecond=0)
+        t -= datetime.timedelta(minutes=1)
         return (t, t.isoformat()+'Z')
 
     def _get_message(self, qs):
@@ -137,7 +138,11 @@ class Connection(object):
         urlstr = self._get_request(qs, fmt)
         data = urllib2.urlopen(urlstr)
         if fmt == 'json':
-            d = json.loads(data.read())['d']['results']
+            res = data.read()
+            try:
+                d = json.loads(res)['d']['results']
+            except:
+                d = json.loads(res)['d']
             ret = [self._datum_factory(i, self.dataset, self.table) for i in d]
         else:
             ret = data.read()
