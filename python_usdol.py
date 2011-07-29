@@ -52,7 +52,7 @@ class Connection(object):
     consult get_data's docstring.
     
     '''
-    def __init__(self, token, secret):
+    def __init__(self, token=None, secret=None):
         self.token = token
         self.secret = secret
 
