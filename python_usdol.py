@@ -25,6 +25,15 @@ API_VER = 'V1'
 
 
 class Datum(object):
+    """
+    Datum(d, ds, t) -> Returns an object representing the information in
+    a single table row.
+
+    d -> Python dictionary from JSON data returned by API
+    ds -> String representing the name of the source dataset
+    t -> String representing the name of the source table
+    
+    """
     created = datetime.datetime.now()
     def __init__(self, d, ds, t):
         self.dataset = ds
@@ -37,7 +46,7 @@ class Datum(object):
 
 
 class Connection(object):
-    '''
+    """
     An instance of Connection represents a connection to the U.S. Dept.
     of Labor's developer API.
 
@@ -51,17 +60,17 @@ class Connection(object):
     which will fetch the data according to parameters. For more info,
     consult get_data's docstring.
     
-    '''
+    """
     def __init__(self, token=None, secret=None):
         self.token = token
         self.secret = secret
 
     def _datum_factory(self, dictionary, dataset, table):
-        '''
+        """
         The Datum instance simply makes dictionary values available using
         attribute syntax vice dictionary syntax.
 
-        '''
+        """
         return Datum(dictionary, dataset, table)
 
     def _urlencode(self, d):
@@ -69,18 +78,23 @@ class Connection(object):
         return '&'.join(ret)
         
     def _get_timestamp(self):
-        '''
+        """
         Returns the Timestamp and ApiKey portions of the query string.
         
         There is a 15-minute window for an auth string with a valid
         timestamp to be accepted by the US DOL's servers.
         
-        '''
+        """
         t = datetime.datetime.utcnow().replace(microsecond=0)
         t -= datetime.timedelta(minutes=1)
         return (t, t.isoformat()+'Z')
 
     def _get_message(self, qs):
+        """
+        Generates the message to be hashed by HMAC SHA1 algorithm and
+        passed to the API in the "Authorization" header.
+
+        """
         baseurl = '/%s/%s/' % (API_VER, self.dataset)
         if self.table != '$metadata':
             baseurl += self.table
@@ -96,6 +110,13 @@ class Connection(object):
         return self._urlencode(d)
 
     def _get_querystring(self, **kwargs):
+        """
+        Generates the query string which will be appended to the URL of
+        the target dataset/table, e.g.:
+
+        ?&top=10&skip=20
+
+        """
         qs = []
         for arg in kwargs:
             if kwargs[arg]:
@@ -112,7 +133,7 @@ class Connection(object):
 
     def fetch_data(self, dataset, table='$metadata', fmt='json', top=0,
                    skip=0, select='', orderby=''):
-        '''
+        """
         fetch_data(dataset, table[, fmt, top, skip, select, orderby]) ->
         
             Return an object representing the information in the specified
@@ -123,7 +144,7 @@ class Connection(object):
         
         'fmt' is json by default. Valid choices are 'xml' and 'json'.
         
-        '''
+        """
         
         qs = self._get_querystring(top=top, skip=skip, select=select,
                                    orderby=orderby)
