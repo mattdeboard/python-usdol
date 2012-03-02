@@ -153,8 +153,6 @@ class Connection(object):
         
         qs = self._get_querystring(top=top, skip=skip, select=select,
                                    orderby=orderby, filter_=filter_)
-        import sys
-        print >> sys.stdout, qs
         self.dataset = dataset
         self.table = table
         enc_opts = ['json', 'xml']
