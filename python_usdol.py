@@ -104,7 +104,7 @@ class Connection(object):
         header = self._get_header(qs)
         url = string.join(url_args, '/') + qs
         req = urllib2.Request(url, headers={"Authorization": header,
-                                           "Accept": 'application/%s' % fmt})
+                                            "Accept": 'application/%s' % fmt})
         return req
 
     def fetch_data(self, dataset, table='$metadata', fmt='json', top=0,
