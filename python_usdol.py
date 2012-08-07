@@ -17,9 +17,7 @@ import hashlib
 import hmac
 import json
 import string
-import urllib
 import urllib2
-import urlparse
 
 USDOL_URL = 'http://api.dol.gov'
 API_VER = 'V1'
