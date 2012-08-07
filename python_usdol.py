@@ -25,27 +25,6 @@ USDOL_URL = 'http://api.dol.gov'
 API_VER = 'V1'
 
 
-class Datum(object):
-    """
-    Datum(d, ds, t) -> Returns an object representing the information in
-    a single table row.
-
-    d -> Python dictionary from JSON data returned by API
-    ds -> String representing the name of the source dataset
-    t -> String representing the name of the source table
-    
-    """
-    created = datetime.datetime.now()
-    def __init__(self, d, ds, t):
-        self.dataset = ds
-        self.table = t
-        for key in d.keys():
-            setattr(self, key, d[key])
-            
-    def __repr__(self):
-        return '<python_usdol.%s.%s object>' % (self.dataset, self.table)
-
-
 class Connection(object):
     """
     An instance of Connection represents a connection to the U.S. Dept.
@@ -65,14 +44,6 @@ class Connection(object):
     def __init__(self, token=None, secret=None):
         self.token = token
         self.secret = secret
-
-    def _datum_factory(self, dictionary, dataset, table):
-        """
-        The Datum instance simply makes dictionary values available using
-        attribute syntax vice dictionary syntax.
-
-        """
-        return Datum(dictionary, dataset, table)
 
     def _urlencode(self, d):
         ret = ['%s=%s' % (k, v) for k, v in d.iteritems()]
@@ -164,12 +135,8 @@ class Connection(object):
         urlstr = self._get_request(qs, fmt)
         data = urllib2.urlopen(urlstr)
         if fmt == 'json':
-            res = data.read()
-            try:
-                d = json.loads(res)['d']['results']
-            except:
-                d = json.loads(res)['d']
-            ret = [self._datum_factory(i, self.dataset, self.table) for i in d]
+            d = json.loads(data.read())['d']
+            ret = d.get('results', d)
         else:
             ret = data.read()
         return ret
