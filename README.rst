@@ -22,7 +22,7 @@ Where 'FAQ' and 'Topic' are the names of the targeted dataset and table within t
 ``fetch_data`` returns a dictionary, with a key for each column on the database you've specified, with an additional ``__metadata`` key.
 
 
-Some datasets have "multipart" names, e.g. the `Consumer Expenditure Survey Dataset <http://developer.dol.gov/ConsumerExpenditure-DATASET.htm>`_. In this case, since the base url is `http://api.dol.gov/V1/Statistics/ConsumerExpenditure`, vice e.g. `.../V1/FORMS`, for the first argument to fetch data, you would pass the "multipart" Agency name::
+Some datasets have "multipart" names, e.g. the `Consumer Expenditure Survey Dataset <http://developer.dol.gov/ConsumerExpenditure-DATASET.htm>`_. In this case, since the base url is ``http://api.dol.gov/V1/Statistics/ConsumerExpenditure``, vice e.g. ``.../V1/FORMS``, for the first argument to fetch data, you would pass the "multipart" Agency name::
 
   data = conn.fetch_data('Statistics/ConsumerExpenditure', '<desired table name>')
 
