@@ -88,13 +88,12 @@ class Connection(object):
 
         """
         qs = []
-        for arg in kwargs:
-            if kwargs[arg]:
+        for key, value in kwargs.items():
+            if value:
                 # `filter` is a keyword in Python, so I avoid using it by
                 # adding a _ to the end, then removing it here.
-                key = arg.replace('_', '')
-                val = kwargs[arg].replace(' ', '+')
-                qs.append("$%s=%s" % (key, val))
+                qs.append("$%s=%s" %
+                          (key.replace('_', ''), str(value).replace(' ', '+')))
         return '?' + string.join(qs, '&')
 
     def _get_request(self, qs='', fmt='json'):
